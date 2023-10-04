@@ -45,12 +45,19 @@ const updateUser = async (email, userData) => {
   }
 };
 
-
+const updateSubscription = async (email, subscription) => {
+  try {
+    return await User.findOneAndUpdate(email, subscription, {
+      new: true,
+    });
+  } catch (error) {}
+};
 
 module.exports = {
-    createUser,
-    getUser,
-    updateUser,
-    DuplicatedKeyError,
-    UnknownDatabaseError,
+  createUser,
+  getUser,
+  updateUser,
+  DuplicatedKeyError,
+  UnknownDatabaseError,
+  updateSubscription,
 };

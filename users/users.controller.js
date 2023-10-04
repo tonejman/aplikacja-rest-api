@@ -71,11 +71,22 @@ const currentHandler = async (req, res, next) => {
   }
 };
 
-
+const subscriptionHandler = async (req, res, next) => {
+  try {
+    const user = await userDao.updateSubscription(req.body.email, req.body);
+    if (!user) {
+      return res.status(404).json({ message: "Not found" });
+    }
+    return res.send({ email: user.email, subscription: user.subscription });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 module.exports = {
   signupHandler,
   loginHandler,
   logoutHandler,
   currentHandler,
+  subscriptionHandler,
 };

@@ -73,7 +73,7 @@ const currentHandler = async (req, res, next) => {
 
 const subscriptionHandler = async (req, res, next) => {
   try {
-    const user = await userDao.updateSubscription(req.body.email, req.body);
+    const user = await userDao.updateSubscription(req.user, req.body);
     if (!user) {
       return res.status(404).json({ message: "Not found" });
     }

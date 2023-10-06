@@ -7,16 +7,23 @@ const {
   updateStatusContact,
 } = require("./contacts.service");
 
-const getAllContactsHandler = async (_, res) => {
+const getAllContactsHandler = async (req, res, next) => {
   try {
-    const contacts = await listContacts();
+    const { page = 1, limit = 20, favorite } = req.query;
+    const contacts = await listContacts(
+      req.user,
+      page,
+      limit,
+      favorite
+    );
     return res.json({ contacts });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
+    next(err);
   }
 };
 
-const getSingleContactHandler = async (req, res) => {
+const getSingleContactHandler = async (req, res, next) => {
   try {
     const contact = await getContactById(req.params.contactId);
 
@@ -24,8 +31,9 @@ const getSingleContactHandler = async (req, res) => {
       return res.status(404).json({ message: "Not found" });
     }
     return res.json({ contact });
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
+    next(err);
   }
 };
 

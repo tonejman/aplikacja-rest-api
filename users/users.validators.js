@@ -24,9 +24,6 @@ const userSubscriptionSchema = Joi.object({
   subscription: Joi.string().valid("starter", "pro", "business").required(),
 });
 
-
-
-
 const userSubscriptionValidator = (req, res, next) => {
   const { error } = userSubscriptionSchema.validate(req.body);
 

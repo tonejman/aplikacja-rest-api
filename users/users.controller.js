@@ -116,8 +116,8 @@ const updateUserAvatarHandler = async (req, res, next) => {
     } else {
       return res.status(401).send({ message: "Not authorized" });
     }
-  } catch (error) {
-    console.error(error);
+  } catch (e) {
+    console.error(e);
     next(e);
   }
 };

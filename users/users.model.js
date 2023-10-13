@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  avatarURL: {
+    type: String,
+    default: null,
+  }
 });
 
 
@@ -38,6 +42,4 @@ userSchema.methods.validatePassword = async function (password) {
 
 const User = new mongoose.model("users", userSchema);
 
-module.exports = {
-  User,
-}; 
+module.exports = User; 

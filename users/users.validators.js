@@ -20,24 +20,9 @@ const userValidationMiddleware = (req, res, next) => {
   return next();
 };
 
-
 const userSubscriptionSchema = Joi.object({
   subscription: Joi.string().valid("starter", "pro", "business").required(),
 });
-
-
-// const subscriptionSchema = Joi.object({
-//   subscription: Joi.string().valid("starter", "pro", "business").required(),
-// });
-
-// const subscriptionValidationMiddleware = (req, res, next) => {
-//   const { error } = subscriptionSchema.validate(req.body);
-//   if (error) {
-//     return res.status(400).send({ error: error.message });
-//   }
-//   return next();
-// };
-
 
 const userSubscriptionValidator = (req, res, next) => {
   const { error } = userSubscriptionSchema.validate(req.body);

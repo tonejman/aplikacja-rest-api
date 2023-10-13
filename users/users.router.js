@@ -26,8 +26,6 @@ const upload = multer({
   storage: storage,
 });
 
-
-
 const usersRouter = Router();
 
 usersRouter.post('/signup', userValidationMiddleware, usersController.signupHandler);

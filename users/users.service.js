@@ -53,7 +53,7 @@ const updateSubscription = async (email, subscription) => {
     return await User.findOneAndUpdate(email, subscription, {
       new: true,
     });
-  } catch (error) {}
+  } catch (e) {}
 };
 
 const updateUserAvatar = async (email, avatarURL) => {

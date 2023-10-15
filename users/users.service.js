@@ -1,4 +1,5 @@
-const { User } = require('./users.model');
+const User = require('./users.model');
+const gravatar = require("gravatar");
 
 class DuplicatedKeyError extends Error {
   constructor(keyName, value) {
@@ -12,19 +13,21 @@ class UnknownDatabaseError extends Error {
   }
 }
 
-const createUser = async (userData) => {
-    try {
-        return await User.create(userData);
-    } catch (e) {
-        console.error(e);
+const createUser = async ({ email, password }) => {
+  try {
+    const avatarURL = gravatar.url(`${email}`, { default: "identicon" }, true);
+    const newUser = await User.create({ email, password, avatarURL });
+    return newUser;
+  } catch (e) {
+    console.error(e);
 
-        if (e.code === 11000) {
-            const [[key, value]] = Object.entries(e.keyValue);
-            throw new DuplicatedKeyError(key, value);
-        }
-
-        throw new UnknownDatabaseError();
+    if (e.code === 11000) {
+      const [[key, value]] = Object.entries(e.keyValue);
+      throw new DuplicatedKeyError(key, value);
     }
+
+    throw new UnknownDatabaseError();
+  }
 };
 
 const getUser = async (email) => {
@@ -53,6 +56,17 @@ const updateSubscription = async (email, subscription) => {
   } catch (error) {}
 };
 
+const updateUserAvatar = async (email, avatarURL) => {
+  try {
+    return await User.findOneAndUpdate(email, avatarURL, {
+      new: true,
+    });
+  } catch (e) {
+    console.error(e);
+    throw new UnknownDatabaseError();
+  }
+};
+
 module.exports = {
   createUser,
   getUser,
@@ -60,4 +74,5 @@ module.exports = {
   DuplicatedKeyError,
   UnknownDatabaseError,
   updateSubscription,
+  updateUserAvatar,
 };

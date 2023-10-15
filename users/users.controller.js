@@ -1,5 +1,11 @@
-const userDao = require("./users.service");
-const authService = require("../auth/auth.service");
+const userDao = require('./users.service');
+const authService = require('../auth/auth.service');
+const jimp = require('jimp');
+const mimetypes = require('mime-types');
+const { v4 } = require('uuid');
+const path = require('path');
+const fs = require('fs/promises');
+const User = require('./users.model');
 
 const signupHandler = async (req, res, next) => {
   try {
@@ -10,6 +16,7 @@ const signupHandler = async (req, res, next) => {
       user: {
         email: createdUser.email,
         subscription: createdUser.subscription,
+        avatarURL: createdUser.avatarURL,
       },
     });
   } catch (e) {
@@ -83,10 +90,43 @@ const subscriptionHandler = async (req, res, next) => {
   }
 };
 
+const updateUserAvatarHandler = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const avatarImage = await jimp.read(req.file.path);
+    const resizedAvatar = avatarImage.resize(250, 250);
+    await resizedAvatar.writeAsync(req.file.path);
+    const fileName = `${email}_${v4()}.${mimetypes.extension(
+      req.file.mimetype
+    )}`;
+    await fs.rename(
+      req.file.path,
+      path.join(__dirname, '..', 'public/avatars', fileName)
+    );
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      {
+        avatarURL: `${req.protocol}://${req.headers.host}/avatars/${fileName}`,
+      },
+      { new: true }
+    );
+    if (updatedUser) {
+      return res.status(200).send({ result: updatedUser.avatarURL });
+    } else {
+      return res.status(401).send({ message: "Not authorized" });
+    }
+  } catch (e) {
+    console.error(e);
+    next(e);
+  }
+};
+
 module.exports = {
   signupHandler,
   loginHandler,
   logoutHandler,
   currentHandler,
   subscriptionHandler,
+  updateUserAvatarHandler,
 };

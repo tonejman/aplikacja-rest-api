@@ -1,5 +1,6 @@
 const User = require('./users.model');
 const gravatar = require("gravatar");
+const { v4: uuid } = require("uuid");
 
 class DuplicatedKeyError extends Error {
   constructor(keyName, value) {
@@ -16,7 +17,14 @@ class UnknownDatabaseError extends Error {
 const createUser = async ({ email, password }) => {
   try {
     const avatarURL = gravatar.url(`${email}`, { default: "identicon" }, true);
-    const newUser = await User.create({ email, password, avatarURL });
+    const verificationToken = uuid();
+    const newUser = await User.create({
+      email,
+      password,
+      avatarURL,
+      verificationToken,
+      verified: false,
+    });
     return newUser;
   } catch (e) {
     console.error(e);
@@ -30,14 +38,14 @@ const createUser = async ({ email, password }) => {
   }
 };
 
-const getUser = async (email) => {
-    try {
-        return await User.findOne({ email });
-    } catch (e) {
-        console.error(e);
-        throw new UnknownDatabaseError();
-    }
-}
+const getUser = async (filter) => {
+  try {
+    return await User.findOne(filter);
+  } catch (e) {
+    console.error(e);
+    throw new UnknownDatabaseError();
+  }
+};
 
 const updateUser = async (email, userData) => {
   try {

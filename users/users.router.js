@@ -33,6 +33,8 @@ usersRouter.post('/signup', userValidationMiddleware, usersController.signupHand
 usersRouter.post('/login', userValidationMiddleware, usersController.loginHandler);
 usersRouter.post('/logout', authMiddleware, usersController.logoutHandler);
 usersRouter.get('/current', authMiddleware, usersController.currentHandler);
+usersRouter.get("/verify/:verificationToken", usersController.verifyHandler);
+usersRouter.post("/verify", usersController.resendVerificationHandler);
 usersRouter.patch(
   "/",
   authMiddleware,
